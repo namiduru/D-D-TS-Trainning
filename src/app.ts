@@ -43,10 +43,35 @@ class ProjectInput {
     this.hostElement.insertAdjacentElement('afterbegin', this.element);
   }
 
+  private gatherUserInputs(): [string, string, number] | void {
+    const enteredTitle = this.titleInputElement.value;
+    const enteredDescription = this.descriptionInputElement.value;
+    const enteredPeople = this.peopleInputElement.value;
+
+    if(enteredTitle.trim().length === 0 || enteredDescription.trim().length === 0 || enteredPeople.trim().length === 0) {
+      return;
+    } else {
+      return [enteredTitle, enteredDescription, +enteredPeople];
+    }
+  }
+
+  private clearInputs() {
+    this.titleInputElement.value = '';
+    this.descriptionInputElement.value = '';
+    this.peopleInputElement.value = '';
+  }
+
   @Autobind
   private submitHandler(event: Event) {
     event.preventDefault(); // To Stop HTTP Execution, it is browsers default execution logic...
-    console.log(this.titleInputElement);
+    const userInput = this.gatherUserInputs();
+
+    // Checking either output is array or void if the validation is failed
+    if(Array.isArray(userInput)) {
+      const [title ,desc, people] = userInput;
+      console.log(title, desc, people);
+      this.clearInputs();
+    }
   }
 
   private configure() {
