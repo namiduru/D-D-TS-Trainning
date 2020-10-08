@@ -168,7 +168,10 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> implements 
 
   @Autobind
   dragStartHandler(event: DragEvent) {
-    console.log(event);
+    // dataTransfer gives you ability to transfer datas over to other DragEvents
+    // we don't need to pass object, that would probably consume more memory rather then sending primitive string
+    event.dataTransfer!.setData('text/plain', this.project.id);
+    event.dataTransfer!.effectAllowed = 'move';
   }
 
   @Autobind
@@ -200,20 +203,23 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> implements Drag
   }
 
   @Autobind
-  dragOverHandler(_: DragEvent) {
-    const listEl = this.element.querySelector('ul')!;
-    listEl.classList.add('droppable');
+  dragOverHandler(event: DragEvent) {
+    if(event.dataTransfer && event.dataTransfer.types[0] == 'text/plain') {
+      event.preventDefault(); // Otherwise dropHandler will not be called because drop operations in JS nonusable by default.
+      const listEl = this.element.querySelector('ul')!;
+      listEl.classList.add('droppable');
+    }
   }
 
   @Autobind
-  dropHandler(_: DragEvent) {
-
+  dropHandler(event: DragEvent) {
+    console.log(event.dataTransfer?.getData('text/plain'));
   }
 
   @Autobind
   dragLeaveHandler(_: DragEvent) {
     const listEl = this.element.querySelector('ul')!;
-    listEl.classList.remove('droppable');
+    listEl.classList.remove('droppable'); 
   }
 
   private renderProjects() {
